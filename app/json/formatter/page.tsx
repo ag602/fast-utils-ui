@@ -1,8 +1,11 @@
 "use client"
 
+import { useState } from "react"
 import { JsonEditor } from "@/components/json-editor"
 
 export default function JsonFormatterPage() {
+  const [jsonValue, setJsonValue] = useState("")
+
   return (
     <div className="space-y-6">
       <div className="space-y-2">
@@ -11,7 +14,10 @@ export default function JsonFormatterPage() {
           Format, validate, and beautify your JSON with our powerful JSON editor.
         </p>
       </div>
-      <JsonEditor />
+      <JsonEditor 
+        value={jsonValue}
+        onChange={setJsonValue}
+      />
     </div>
   )
 }
