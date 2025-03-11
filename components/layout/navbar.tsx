@@ -2,110 +2,120 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { Button } from "@/components/ui/button"
 import {
-  Code,
-  Video,
-  Music,
-  Wrench,
-  ChevronDown
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { 
+  Code, 
+  FileVideo, 
+  Image, 
+  FileAudio, 
+  FileText, 
+  FileIcon,
+  ChevronDown,
+  Zap
 } from "lucide-react"
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  NavigationMenuViewport,
-  navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu"
-import { cn } from "@/lib/utils"
 
-const tools = {
-  "All Tools": {
-    icon: <Wrench className="w-4 h-4" />,
-    items: [
-      { name: "JSON Tools", href: "/json" },
-      { name: "Video Tools", href: "/video" },
-      { name: "Audio Tools", href: "/audio" },
-      // Add more tools as needed
-    ]
-  },
-  "JSON Tools": {
+const tools = [
+  {
+    name: "Code",
     icon: <Code className="w-4 h-4" />,
     items: [
       { name: "JSON Formatter", href: "/json/formatter" },
-      { name: "JSON Validator", href: "/json/validator" },
+      { name: "JSON Delimiter", href: "/json/delimiter" },
       { name: "JSON Diff", href: "/json/diff" },
     ]
   },
-  "Video Tools": {
-    icon: <Video className="w-4 h-4" />,
+  {
+    name: "Video",
+    icon: <FileVideo className="w-4 h-4" />,
     items: [
+      { name: "Video Editor", href: "/video/editor" },
       { name: "Video Converter", href: "/video/converter" },
-      { name: "Video Compressor", href: "/video/compressor" },
-      { name: "Video Trimmer", href: "/video/trimmer" },
     ]
   },
-  "Audio Tools": {
-    icon: <Music className="w-4 h-4" />,
+  {
+    name: "Image",
+    icon: <Image className="w-4 h-4" />,
     items: [
+      { name: "Image Editor", href: "/image/editor" },
+      { name: "Image Converter", href: "/image/converter" },
+    ]
+  },
+  {
+    name: "Audio",
+    icon: <FileAudio className="w-4 h-4" />,
+    items: [
+      { name: "Audio Editor", href: "/audio/editor" },
       { name: "Audio Converter", href: "/audio/converter" },
-      { name: "Audio Compressor", href: "/audio/compressor" },
-      { name: "Audio Trimmer", href: "/audio/trimmer" },
+    ]
+  },
+  {
+    name: "Document",
+    icon: <FileText className="w-4 h-4" />,
+    items: [
+      { name: "Document Editor", href: "/document/editor" },
+      { name: "Document Converter", href: "/document/converter" },
+    ]
+  },
+  {
+    name: "File",
+    icon: <FileIcon className="w-4 h-4" />,
+    items: [
+      { name: "File Converter", href: "/file/converter" },
+      { name: "File Compressor", href: "/file/compressor" },
     ]
   }
-}
+]
 
 export function Navbar() {
   const pathname = usePathname()
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center">
-        <Link href="/" className="mr-6 flex items-center space-x-2">
-          <Wrench className="h-6 w-6" />
-          <span className="hidden font-bold sm:inline-block">
-            FastUtils
-          </span>
+    <div className="border-b">
+      <div className="flex h-16 items-center px-4">
+        <Link 
+          href="/" 
+          className="mr-8 flex items-center space-x-2 transition-colors hover:text-foreground/80"
+        >
+          <Zap className="h-6 w-6 text-primary" />
+          <span className="text-xl font-bold">FastUtils</span>
         </Link>
-        <NavigationMenu>
-          <NavigationMenuList>
-            <NavigationMenuViewport />
-            {Object.entries(tools).map(([category, { icon, items }], index) => (
-              <NavigationMenuItem key={category}>
-                <NavigationMenuTrigger>
-                  <div className="flex items-center gap-2">
-                    {icon}
-                    <span>{category}</span>
+        <nav className="flex items-center space-x-6 text-sm font-medium">
+          {tools.map((tool) => (
+            <DropdownMenu key={tool.name}>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  className="h-8 w-full justify-start font-normal"
+                >
+                  <div className="flex items-center">
+                    {tool.icon}
+                    <span className="ml-2">{tool.name}</span>
+                    <ChevronDown className="ml-1 h-4 w-4" />
                   </div>
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid gap-3 p-4 w-[200px]">
-                    {items.map((item) => (
-                      <li key={item.name}>
-                        <NavigationMenuLink asChild>
-                          <Link
-                            href={item.href}
-                            className={cn(
-                              "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors",
-                              "hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-                              pathname === item.href && "bg-accent"
-                            )}
-                          >
-                            <div className="text-sm font-medium leading-none">{item.name}</div>
-                          </Link>
-                        </NavigationMenuLink>
-                      </li>
-                    ))}
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-            ))}
-          </NavigationMenuList>
-          <NavigationMenuViewport />
-        </NavigationMenu>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48">
+                {tool.items.map((item) => (
+                  <DropdownMenuItem key={item.name} asChild>
+                    <Link 
+                      href={item.href}
+                      className={pathname === item.href ? "bg-accent" : ""}
+                    >
+                      {item.name}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ))}
+        </nav>
       </div>
-    </header>
+    </div>
   )
 }

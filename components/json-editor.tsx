@@ -46,11 +46,39 @@ export function JsonEditor({
   const [editor, setEditor] = useState<Ace.Editor | null>(null)
   const [markers, setMarkers] = useState<number[]>([])
 
+  // Format the value if it's valid JSON
+  const formatJson = (val: string) => {
+    try {
+      const parsed = JSON.parse(val)
+      return JSON.stringify(parsed, null, minify ? 0 : 2)
+    } catch {
+      return val
+    }
+  }
+
+  // Handle value changes
+  const handleChange = (newValue: string) => {
+    if (onChange) {
+      onChange(newValue)
+    }
+  }
+
+  // Format on mount and when minify changes
+  useEffect(() => {
+    if (value && onChange) {
+      const formatted = formatJson(value)
+      if (formatted !== value) {
+        onChange(formatted)
+      }
+    }
+  }, [value, minify])
+
+  // Apply highlights
   useEffect(() => {
     if (!editor) return
 
     const session = editor.getSession()
-
+    
     // Clear existing markers
     markers.forEach(id => session.removeMarker(id))
     setMarkers([])
@@ -61,29 +89,13 @@ export function JsonEditor({
       const lineText = session.getLine(highlight.line)
       if (lineText !== undefined) {
         const range = new Range(highlight.line, 0, highlight.line, lineText.length)
-        return session.addMarker(range, `diff-${highlight.type}`, 'fullLine')
+        return session.addMarker(range, `diff-${highlight.type}`, "fullLine")
       }
       return -1
     }).filter(id => id !== -1)
 
     setMarkers(newMarkers)
-  }, [editor, highlights, value])
-
-  const editorOptions = {
-    enableBasicAutocompletion: true,
-    enableLiveAutocompletion: true,
-    showLineNumbers,
-    tabSize: 2,
-    useSoftTabs: true,
-    showPrintMargin: false,
-    fontSize: 14,
-    readOnly
-  }
-
-  const editorStyle = {
-    width: "100%",
-    height: "100%"
-  }
+  }, [editor, highlights])
 
   const getHighlightStyle = (type: 'added' | 'deleted' | 'changed') => {
     switch (type) {
@@ -98,27 +110,21 @@ export function JsonEditor({
     }
   }
 
-  // Format the value if it's valid JSON
-  const formatValue = (val: string, shouldMinify: boolean = false) => {
-    try {
-      const parsed = JSON.parse(val)
-      return shouldMinify 
-        ? JSON.stringify(parsed)
-        : JSON.stringify(parsed, null, 2)
-    } catch {
-      return val
-    }
+  const editorOptions = {
+    enableBasicAutocompletion: true,
+    enableLiveAutocompletion: true,
+    showGutter: showLineNumbers,
+    showLineNumbers: showLineNumbers,
+    tabSize: 2,
+    useSoftTabs: true,
+    showPrintMargin: false,
+    readOnly,
+    useWorker: false,
+    fontSize: 14
   }
 
-  // Format initial value
-  useEffect(() => {
-    if (value && onChange) {
-      onChange(formatValue(value, minify))
-    }
-  }, [minify])
-
   return (
-    <div className="relative" style={{ height: "300px" }}>
+    <div className={`relative border rounded-md ${className}`} style={{ minHeight: "300px" }}>
       <style jsx global>{`
         .diff-added {
           ${getHighlightStyle('added')}
@@ -138,22 +144,27 @@ export function JsonEditor({
           width: 100% !important;
           pointer-events: none;
         }
+        .ace_gutter {
+          background-color: #f5f5f5 !important;
+          color: #666 !important;
+        }
+        .ace_gutter-cell {
+          padding-left: 0.5rem !important;
+          padding-right: 0.5rem !important;
+        }
       `}</style>
       <AceEditor
-        onLoad={(editorInstance) => {
-          setEditor(editorInstance)
-        }}
         mode="json"
         theme="tomorrow"
         value={value}
-        onChange={onChange}
+        onChange={handleChange}
+        onLoad={setEditor}
         name={`json-editor-${Math.random()}`}
+        width="100%"
+        height="300px"
         editorProps={{ $blockScrolling: true }}
         setOptions={editorOptions}
-        width="100%"
-        height="100%"
-        style={editorStyle}
-        className={`shadow-sm ${className}`}
+        className="w-full h-full"
       />
     </div>
   )

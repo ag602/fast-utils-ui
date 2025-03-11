@@ -9,20 +9,22 @@ import {
 } from "@/components/ui/tooltip";
 
 interface DownloadButtonProps {
-  output: string;
+  content: string;
+  filename: string;
 }
 
-export function DownloadButton({ output }: DownloadButtonProps) {
+export function DownloadButton({ content, filename }: DownloadButtonProps) {
   const handleDownload = () => {
-    const blob = new Blob([output], { type: "application/json" });
+    const blob = new Blob([content], { type: "application/json" });
     const url = URL.createObjectURL(blob);
 
     const link = document.createElement("a");
     link.href = url;
-    link.download = "formatted.json"; // You can customize the filename
+    link.download = filename;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   return (
