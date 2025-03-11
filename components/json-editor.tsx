@@ -1,16 +1,9 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Check, Copy } from "lucide-react"
+import React, { useEffect, useState } from "react"
 import dynamic from 'next/dynamic'
-import { Button } from "@/components/ui/button"
-import { ListButton } from "./json-editor-buttons/ListButton"
-import { JsonBeautifierButton } from "./json-editor-buttons/JsonBeautifierButton"
-import { DownloadButton } from "./json-editor-buttons/DownloadButton"
-import { UndoButton } from "./json-editor-buttons/UndoButton"
-import { MagicFixButton } from "./json-editor-buttons/MagicFixButton"
-import { JsonToolbar } from "./json-editor-buttons/JsonToolbar"
 import { configureAceEditor } from "@/config/ace-editor-worker"
+import type { Ace } from 'ace-builds'
 
 // Configure Ace Editor
 configureAceEditor()
@@ -29,205 +22,118 @@ const AceEditor = dynamic(
 )
 
 interface JsonEditorProps {
-  minify?: boolean
+  value: string
+  onChange?: (value: string) => void
+  showLineNumbers?: boolean
+  readOnly?: boolean
+  className?: string
+  highlights?: {
+    line: number
+    type: 'added' | 'deleted' | 'changed'
+  }[]
 }
 
-export function JsonEditor({ minify = false }: JsonEditorProps) {
-  const [input, setInput] = useState("")
-  const [output, setOutput] = useState("")
-  const [copied, setCopied] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [editorHeight, setEditorHeight] = useState("300px")
-  const [fontSize, setFontSize] = useState(14)
+export function JsonEditor({ 
+  value, 
+  onChange,
+  showLineNumbers = true,
+  readOnly = false,
+  className = "",
+  highlights = []
+}: JsonEditorProps) {
+  const [editor, setEditor] = useState<Ace.Editor | null>(null)
+  const [markers, setMarkers] = useState<number[]>([])
 
   useEffect(() => {
-    // Update editor height based on window size
-    const updateHeight = () => {
-      const minHeight = 300
-      const maxHeight = window.innerHeight * 0.7
-      setEditorHeight(`${Math.max(minHeight, maxHeight)}px`)
-    }
-    
-    updateHeight()
-    window.addEventListener('resize', updateHeight)
-    return () => window.removeEventListener('resize', updateHeight)
-  }, [])
+    if (!editor) return
 
-  const formatJson = () => {
-    try {
-      const parsed = JSON.parse(input)
-      const formatted = minify ? JSON.stringify(parsed) : JSON.stringify(parsed, null, 2)
-      setOutput(formatted)
-      setError(null)
-    } catch (err) {
-      setError("Invalid JSON: Please check your syntax")
-      setOutput("")
-    }
-  }
+    const session = editor.getSession()
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(output)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
+    // Clear existing markers
+    markers.forEach(id => session.removeMarker(id))
+    setMarkers([])
 
-  const handleZoomIn = () => {
-    setFontSize(prev => Math.min(prev + 2, 24))
-  }
+    // Add new markers
+    const Range = require('ace-builds').Range
+    const newMarkers = highlights.map(highlight => {
+      const lineText = session.getLine(highlight.line)
+      if (lineText !== undefined) {
+        const range = new Range(highlight.line, 0, highlight.line, lineText.length)
+        return session.addMarker(range, `diff-${highlight.type}`, 'fullLine')
+      }
+      return -1
+    }).filter(id => id !== -1)
 
-  const handleZoomOut = () => {
-    setFontSize(prev => Math.max(prev - 2, 10))
-  }
-
-  const handleReset = () => {
-    setFontSize(14)
-  }
-
-  const handleFilterEmpty = () => {
-    try {
-      const parsed = JSON.parse(input)
-      const filtered = JSON.parse(JSON.stringify(parsed, (key, value) => {
-        if (value === "") return undefined
-        return value
-      }))
-      setInput(JSON.stringify(filtered, null, 2))
-    } catch (err) {
-      setError("Invalid JSON: Cannot filter empty values")
-    }
-  }
-
-  const handleFilterNulls = () => {
-    try {
-      const parsed = JSON.parse(input)
-      const filtered = JSON.parse(JSON.stringify(parsed, (key, value) => {
-        if (value === null) return undefined
-        return value
-      }))
-      setInput(JSON.stringify(filtered, null, 2))
-    } catch (err) {
-      setError("Invalid JSON: Cannot filter null values")
-    }
-  }
-
-  const handleExpandAll = () => {
-    try {
-      const parsed = JSON.parse(input)
-      setInput(JSON.stringify(parsed, null, 2))
-    } catch (err) {
-      setError("Invalid JSON: Cannot expand")
-    }
-  }
-
-  const handleCollapseAll = () => {
-    try {
-      const parsed = JSON.parse(input)
-      setInput(JSON.stringify(parsed))
-    } catch (err) {
-      setError("Invalid JSON: Cannot collapse")
-    }
-  }
+    setMarkers(newMarkers)
+  }, [editor, highlights, value])
 
   const editorOptions = {
     enableBasicAutocompletion: true,
     enableLiveAutocompletion: true,
-    showLineNumbers: true,
+    showLineNumbers,
     tabSize: 2,
     useSoftTabs: true,
     showPrintMargin: false,
-    highlightActiveLine: true,
-    showGutter: true,
+    fontSize: 14,
+    readOnly
   }
 
   const editorStyle = {
-    border: '2px solid #94a3b8', // Deeper border color (slate-400)
-    borderRadius: '0.5rem',
-    fontSize: `${fontSize}px`,
+    width: "100%",
+    height: "100%"
+  }
+
+  const getHighlightStyle = (type: 'added' | 'deleted' | 'changed') => {
+    switch (type) {
+      case 'added':
+        return 'background-color: rgba(22, 163, 74, 0.3); border-radius: 3px;' // Vibrant green
+      case 'deleted':
+        return 'background-color: rgba(220, 38, 38, 0.3); border-radius: 3px;' // Vibrant red  
+      case 'changed':
+        return 'background-color: rgba(37, 99, 235, 0.3); border-radius: 3px;' // Vibrant blue
+      default:
+        return ''
+    }
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-2">
-        <ListButton input={input} setInput={setInput} />
-        <JsonBeautifierButton
-          input={input}
-          setInput={setInput}
-          setOutput={setOutput}
-          setError={setError}
-        />
-        <DownloadButton output={output} />
-        <UndoButton input={input} setInput={setInput} />
-        <MagicFixButton
-          input={input}
-          setInput={setInput}
-          setOutput={setOutput}
-          setError={setError}
-        />
-        <JsonToolbar
-          onZoomIn={handleZoomIn}
-          onZoomOut={handleZoomOut}
-          onReset={handleReset}
-          onFilterEmpty={handleFilterEmpty}
-          onFilterNulls={handleFilterNulls}
-          onExpandAll={handleExpandAll}
-          onCollapseAll={handleCollapseAll}
-        />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Input Editor */}
-        <div className="space-y-4">
-          <div className="relative" style={{ height: editorHeight }}>
-            <AceEditor
-              mode="json"
-              theme="tomorrow"
-              value={input}
-              onChange={setInput}
-              name="json-input"
-              editorProps={{ $blockScrolling: true }}
-              setOptions={editorOptions}
-              width="100%"
-              height="100%"
-              style={editorStyle}
-              className="shadow-sm"
-              placeholder="Paste your JSON here..."
-            />
-          </div>
-          <div className="flex justify-between items-center">
-            <Button onClick={formatJson}>{minify ? "Minify JSON" : "Format JSON"}</Button>
-            {error && <p className="text-sm text-destructive">{error}</p>}
-          </div>
-        </div>
-
-        {/* Output Editor */}
-        <div className="space-y-4">
-          <div className="relative" style={{ height: editorHeight }}>
-            <AceEditor
-              mode="json"
-              theme="tomorrow"
-              value={output}
-              readOnly={true}
-              name="json-output"
-              editorProps={{ $blockScrolling: true }}
-              setOptions={editorOptions}
-              width="100%"
-              height="100%"
-              style={editorStyle}
-              className="shadow-sm"
-            />
-            {output && (
-              <Button 
-                size="sm" 
-                variant="ghost" 
-                className="absolute top-2 right-2 bg-white/80 hover:bg-white" 
-                onClick={copyToClipboard}
-              >
-                {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                <span className="sr-only">Copy to clipboard</span>
-              </Button>
-            )}
-          </div>
-        </div>
-      </div>
+    <div className="relative" style={{ height: "300px" }}>
+      <style jsx global>{`
+        .diff-added {
+          ${getHighlightStyle('added')}
+          position: absolute;
+          width: 100% !important;
+          pointer-events: none;
+        }
+        .diff-deleted {
+          ${getHighlightStyle('deleted')}
+          position: absolute;
+          width: 100% !important;
+          pointer-events: none;
+        }
+        .diff-changed {
+          ${getHighlightStyle('changed')}
+          position: absolute;
+          width: 100% !important;
+          pointer-events: none;
+        }
+      `}</style>
+      <AceEditor
+        onLoad={(editorInstance) => {
+          setEditor(editorInstance)
+        }}
+        mode="json"
+        theme="tomorrow"
+        value={value}
+        onChange={onChange}
+        name={`json-editor-${Math.random()}`}
+        editorProps={{ $blockScrolling: true }}
+        setOptions={editorOptions}
+        width="100%"
+        height="100%"
+        style={editorStyle}
+        className={`shadow-sm ${className}`}
+      />
     </div>
   )
 }
