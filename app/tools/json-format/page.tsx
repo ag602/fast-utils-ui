@@ -1,4 +1,4 @@
-import { JsonFormatterPage } from "@/components/json-formatter-page"
+import { JsonFormatterPage as JsonFormatter } from "@/components/json-formatter-page"
 
 export const metadata = {
   title: "JSON Formatter & Validator | Utilities",
@@ -6,5 +6,5 @@ export const metadata = {
 }
 
 export default function JsonFormatterPage() {
-  return <JsonFormatterPage />
+  return <JsonFormatter />
 }

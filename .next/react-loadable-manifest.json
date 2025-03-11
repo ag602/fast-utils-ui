@@ -1,0 +1,32 @@
+{
+  "components\\json-editor.tsx -> ace-builds/src-noconflict/ext-language_tools": {
+    "id": "components\\json-editor.tsx -> ace-builds/src-noconflict/ext-language_tools",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_ace-builds_src-noconflict_ext-language_tools_js.js"
+    ]
+  },
+  "components\\json-editor.tsx -> ace-builds/src-noconflict/ext-searchbox": {
+    "id": "components\\json-editor.tsx -> ace-builds/src-noconflict/ext-searchbox",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_ace-builds_src-noconflict_ext-searchbox_js.js"
+    ]
+  },
+  "components\\json-editor.tsx -> ace-builds/src-noconflict/mode-json": {
+    "id": "components\\json-editor.tsx -> ace-builds/src-noconflict/mode-json",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_ace-builds_src-noconflict_mode-json_js.js"
+    ]
+  },
+  "components\\json-editor.tsx -> ace-builds/src-noconflict/theme-tomorrow": {
+    "id": "components\\json-editor.tsx -> ace-builds/src-noconflict/theme-tomorrow",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_ace-builds_src-noconflict_theme-tomorrow_js.js"
+    ]
+  },
+  "components\\json-editor.tsx -> react-ace": {
+    "id": "components\\json-editor.tsx -> react-ace",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_react-ace_lib_index_js.js"
+    ]
+  }
+}

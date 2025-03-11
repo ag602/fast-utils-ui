@@ -259,27 +259,36 @@ const Sidebar = React.forwardRef<
 )
 Sidebar.displayName = "Sidebar"
 
+type PolymorphicRef<C extends React.ElementType> = React.ComponentPropsWithRef<C>["ref"]
+
+type PolymorphicComponentProps<C extends React.ElementType, Props = {}> = {
+  as?: C
+  ref?: PolymorphicRef<C>
+} & Omit<React.ComponentPropsWithoutRef<C>, keyof Props | "as" | "ref"> &
+  Props
+
 const SidebarTrigger = React.forwardRef<
-  React.ElementRef<typeof Button>,
-  React.ComponentProps<typeof Button>
+  HTMLButtonElement,
+  React.ComponentPropsWithoutRef<typeof Button>
 >(({ className, onClick, ...props }, ref) => {
   const { toggleSidebar } = useSidebar()
 
   return (
     <Button
       ref={ref}
-      data-sidebar="trigger"
       variant="ghost"
       size="icon"
-      className={cn("h-7 w-7", className)}
-      onClick={(event) => {
-        onClick?.(event)
+      className={cn(
+        "h-9 w-9 shrink-0 [&>svg]:size-4",
+        className
+      )}
+      onClick={(e) => {
+        onClick?.(e)
         toggleSidebar()
       }}
       {...props}
     >
       <PanelLeft />
-      <span className="sr-only">Toggle Sidebar</span>
     </Button>
   )
 })
@@ -287,12 +296,16 @@ SidebarTrigger.displayName = "SidebarTrigger"
 
 const SidebarRail = React.forwardRef<
   HTMLButtonElement,
-  React.ComponentProps<"button">
->(({ className, ...props }, ref) => {
+  PolymorphicComponentProps<"button"> & {
+    asChild?: boolean
+  }
+>(({ asChild = false, className, ...props }, ref) => {
   const { toggleSidebar } = useSidebar()
 
+  const Comp = asChild ? Slot : "button"
+
   return (
-    <button
+    <Comp
       ref={ref}
       data-sidebar="rail"
       aria-label="Toggle Sidebar"
@@ -316,7 +329,7 @@ SidebarRail.displayName = "SidebarRail"
 
 const SidebarInset = React.forwardRef<
   HTMLDivElement,
-  React.ComponentProps<"main">
+  PolymorphicComponentProps<"main">
 >(({ className, ...props }, ref) => {
   return (
     <main
@@ -334,7 +347,7 @@ SidebarInset.displayName = "SidebarInset"
 
 const SidebarInput = React.forwardRef<
   React.ElementRef<typeof Input>,
-  React.ComponentProps<typeof Input>
+  PolymorphicComponentProps<typeof Input>
 >(({ className, ...props }, ref) => {
   return (
     <Input
@@ -352,7 +365,7 @@ SidebarInput.displayName = "SidebarInput"
 
 const SidebarHeader = React.forwardRef<
   HTMLDivElement,
-  React.ComponentProps<"div">
+  PolymorphicComponentProps<"div">
 >(({ className, ...props }, ref) => {
   return (
     <div
@@ -367,7 +380,7 @@ SidebarHeader.displayName = "SidebarHeader"
 
 const SidebarFooter = React.forwardRef<
   HTMLDivElement,
-  React.ComponentProps<"div">
+  PolymorphicComponentProps<"div">
 >(({ className, ...props }, ref) => {
   return (
     <div
@@ -382,7 +395,7 @@ SidebarFooter.displayName = "SidebarFooter"
 
 const SidebarSeparator = React.forwardRef<
   React.ElementRef<typeof Separator>,
-  React.ComponentProps<typeof Separator>
+  PolymorphicComponentProps<typeof Separator>
 >(({ className, ...props }, ref) => {
   return (
     <Separator
@@ -397,7 +410,7 @@ SidebarSeparator.displayName = "SidebarSeparator"
 
 const SidebarContent = React.forwardRef<
   HTMLDivElement,
-  React.ComponentProps<"div">
+  PolymorphicComponentProps<"div">
 >(({ className, ...props }, ref) => {
   return (
     <div
@@ -415,7 +428,7 @@ SidebarContent.displayName = "SidebarContent"
 
 const SidebarGroup = React.forwardRef<
   HTMLDivElement,
-  React.ComponentProps<"div">
+  PolymorphicComponentProps<"div">
 >(({ className, ...props }, ref) => {
   return (
     <div
@@ -428,31 +441,36 @@ const SidebarGroup = React.forwardRef<
 })
 SidebarGroup.displayName = "SidebarGroup"
 
-const SidebarGroupLabel = React.forwardRef<
-  HTMLDivElement,
-  React.ComponentProps<"div"> & { asChild?: boolean }
->(({ className, asChild = false, ...props }, ref) => {
-  const Comp = asChild ? Slot : "div"
+type SidebarGroupLabelProps = {
+  asChild?: boolean
+} & React.ComponentPropsWithoutRef<"div">
 
-  return (
-    <Comp
-      ref={ref}
-      data-sidebar="group-label"
-      className={cn(
-        "duration-200 flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium text-sidebar-foreground/70 outline-none ring-sidebar-ring transition-[margin,opa] ease-linear focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
-        "group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0",
-        className
-      )}
-      {...props}
-    />
-  )
-})
+const SidebarGroupLabel = React.forwardRef<HTMLDivElement, SidebarGroupLabelProps>(
+  ({ className, asChild = false, ...props }, ref) => {
+    const Comp = asChild ? Slot : "div"
+
+    return (
+      <Comp
+        ref={ref}
+        data-sidebar="group-label"
+        className={cn(
+          "duration-200 flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium text-sidebar-foreground/70 outline-none ring-sidebar-ring transition-[margin,opacity] ease-linear focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
+          "group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0",
+          className
+        )}
+        {...props}
+      />
+    )
+  }
+)
 SidebarGroupLabel.displayName = "SidebarGroupLabel"
 
 const SidebarGroupAction = React.forwardRef<
   HTMLButtonElement,
-  React.ComponentProps<"button"> & { asChild?: boolean }
->(({ className, asChild = false, ...props }, ref) => {
+  PolymorphicComponentProps<"button"> & { asChild?: boolean }
+>(({ asChild = false, className, ...props }, ref) => {
+  const { toggleSidebar } = useSidebar()
+
   const Comp = asChild ? Slot : "button"
 
   return (
@@ -474,7 +492,7 @@ SidebarGroupAction.displayName = "SidebarGroupAction"
 
 const SidebarGroupContent = React.forwardRef<
   HTMLDivElement,
-  React.ComponentProps<"div">
+  PolymorphicComponentProps<"div">
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
@@ -487,7 +505,7 @@ SidebarGroupContent.displayName = "SidebarGroupContent"
 
 const SidebarMenu = React.forwardRef<
   HTMLUListElement,
-  React.ComponentProps<"ul">
+  PolymorphicComponentProps<"ul">
 >(({ className, ...props }, ref) => (
   <ul
     ref={ref}
@@ -500,7 +518,7 @@ SidebarMenu.displayName = "SidebarMenu"
 
 const SidebarMenuItem = React.forwardRef<
   HTMLLIElement,
-  React.ComponentProps<"li">
+  PolymorphicComponentProps<"li">
 >(({ className, ...props }, ref) => (
   <li
     ref={ref}
@@ -535,7 +553,7 @@ const sidebarMenuButtonVariants = cva(
 
 const SidebarMenuButton = React.forwardRef<
   HTMLButtonElement,
-  React.ComponentProps<"button"> & {
+  PolymorphicComponentProps<"button"> & {
     asChild?: boolean
     isActive?: boolean
     tooltip?: string | React.ComponentProps<typeof TooltipContent>
@@ -594,11 +612,11 @@ SidebarMenuButton.displayName = "SidebarMenuButton"
 
 const SidebarMenuAction = React.forwardRef<
   HTMLButtonElement,
-  React.ComponentProps<"button"> & {
+  PolymorphicComponentProps<"button"> & {
     asChild?: boolean
     showOnHover?: boolean
   }
->(({ className, asChild = false, showOnHover = false, ...props }, ref) => {
+>(({ asChild = false, showOnHover = false, className, ...props }, ref) => {
   const Comp = asChild ? Slot : "button"
 
   return (
@@ -625,7 +643,7 @@ SidebarMenuAction.displayName = "SidebarMenuAction"
 
 const SidebarMenuBadge = React.forwardRef<
   HTMLDivElement,
-  React.ComponentProps<"div">
+  PolymorphicComponentProps<"div">
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
@@ -646,10 +664,10 @@ SidebarMenuBadge.displayName = "SidebarMenuBadge"
 
 const SidebarMenuSkeleton = React.forwardRef<
   HTMLDivElement,
-  React.ComponentProps<"div"> & {
+  PolymorphicComponentProps<"div"> & {
     showIcon?: boolean
   }
->(({ className, showIcon = false, ...props }, ref) => {
+>(({ showIcon = false, className, ...props }, ref) => {
   // Random width between 50 to 90%.
   const width = React.useMemo(() => {
     return `${Math.floor(Math.random() * 40) + 50}%`
@@ -684,7 +702,7 @@ SidebarMenuSkeleton.displayName = "SidebarMenuSkeleton"
 
 const SidebarMenuSub = React.forwardRef<
   HTMLUListElement,
-  React.ComponentProps<"ul">
+  PolymorphicComponentProps<"ul">
 >(({ className, ...props }, ref) => (
   <ul
     ref={ref}
@@ -701,13 +719,15 @@ SidebarMenuSub.displayName = "SidebarMenuSub"
 
 const SidebarMenuSubItem = React.forwardRef<
   HTMLLIElement,
-  React.ComponentProps<"li">
->(({ ...props }, ref) => <li ref={ref} {...props} />)
+  PolymorphicComponentProps<"li">
+>(({ className, ...props }, ref) => (
+  <li ref={ref} className={cn(className)} {...props} />
+))
 SidebarMenuSubItem.displayName = "SidebarMenuSubItem"
 
 const SidebarMenuSubButton = React.forwardRef<
   HTMLAnchorElement,
-  React.ComponentProps<"a"> & {
+  PolymorphicComponentProps<"a"> & {
     asChild?: boolean
     size?: "sm" | "md"
     isActive?: boolean
@@ -735,6 +755,40 @@ const SidebarMenuSubButton = React.forwardRef<
 })
 SidebarMenuSubButton.displayName = "SidebarMenuSubButton"
 
+type SidebarLinkProps = {
+  asChild?: boolean
+  size?: "sm" | "md"
+  isActive?: boolean
+} & React.ComponentPropsWithoutRef<"a">
+
+const SidebarLink = React.forwardRef<
+  HTMLAnchorElement,
+  SidebarLinkProps
+>(
+  ({ asChild = false, size = "md", isActive, className, ...props }, ref) => {
+    const Comp = asChild ? Slot : "a"
+
+    return (
+      <Comp
+        ref={ref}
+        data-sidebar="menu-sub-button"
+        data-size={size}
+        data-active={isActive}
+        className={cn(
+          "flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 text-sidebar-foreground outline-none ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-sidebar-accent-foreground",
+          "data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground",
+          size === "sm" && "text-xs",
+          size === "md" && "text-sm",
+          "group-data-[collapsible=icon]:hidden",
+          className
+        )}
+        {...props}
+      />
+    )
+  }
+)
+SidebarLink.displayName = "SidebarLink"
+
 export {
   Sidebar,
   SidebarContent,
@@ -746,6 +800,7 @@ export {
   SidebarHeader,
   SidebarInput,
   SidebarInset,
+  SidebarLink,
   SidebarMenu,
   SidebarMenuAction,
   SidebarMenuBadge,
