@@ -31,6 +31,7 @@ interface JsonEditorProps {
     line: number
     type: 'added' | 'deleted' | 'changed'
   }[]
+  minify?: boolean
 }
 
 export function JsonEditor({ 
@@ -39,7 +40,8 @@ export function JsonEditor({
   showLineNumbers = true,
   readOnly = false,
   className = "",
-  highlights = []
+  highlights = [],
+  minify = false
 }: JsonEditorProps) {
   const [editor, setEditor] = useState<Ace.Editor | null>(null)
   const [markers, setMarkers] = useState<number[]>([])
@@ -95,6 +97,25 @@ export function JsonEditor({
         return ''
     }
   }
+
+  // Format the value if it's valid JSON
+  const formatValue = (val: string, shouldMinify: boolean = false) => {
+    try {
+      const parsed = JSON.parse(val)
+      return shouldMinify 
+        ? JSON.stringify(parsed)
+        : JSON.stringify(parsed, null, 2)
+    } catch {
+      return val
+    }
+  }
+
+  // Format initial value
+  useEffect(() => {
+    if (value && onChange) {
+      onChange(formatValue(value, minify))
+    }
+  }, [minify])
 
   return (
     <div className="relative" style={{ height: "300px" }}>

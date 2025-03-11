@@ -19,6 +19,16 @@ const categories = [
   { id: "audio", label: "Audio Tools" },
 ]
 
+const JsonFormatterUtility = () => {
+  const [value, setValue] = useState("")
+  return <JsonEditor value={value} onChange={setValue} />
+}
+
+const JsonMinifierUtility = () => {
+  const [value, setValue] = useState("")
+  return <JsonEditor value={value} onChange={setValue} minify />
+}
+
 const utilities = [
   {
     id: "json-formatter",
@@ -26,7 +36,7 @@ const utilities = [
     description: "Format and validate your JSON data with syntax highlighting",
     icon: <Code2 className="h-5 w-5" />,
     category: "json",
-    component: <JsonEditor />,
+    component: <JsonFormatterUtility />,
   },
   {
     id: "json-minifier",
@@ -34,7 +44,7 @@ const utilities = [
     description: "Minify your JSON data to reduce file size",
     icon: <Zap className="h-5 w-5" />,
     category: "json",
-    component: <JsonEditor minify />,
+    component: <JsonMinifierUtility />,
   },
   {
     id: "video-compressor",
