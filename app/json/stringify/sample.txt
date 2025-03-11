@@ -1,0 +1,6 @@
+C:\Program Files\FastUtils
+This has a tab	here
+And a backslash \ here
+Line 1
+Line 2
+Line 3

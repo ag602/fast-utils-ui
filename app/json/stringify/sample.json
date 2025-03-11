@@ -1,0 +1,33 @@
+{
+  "name": "FastUtils",
+  "version": "1.0.0",
+  "description": "An all-in-one utility hub",
+  "features": {
+    "code": [
+      "JSON Formatter",
+      "JSON Delimiter",
+      "JSON Stringify",
+      "JSON Diff"
+    ],
+    "video": [
+      "Video Editor",
+      "Video Converter"
+    ],
+    "image": [
+      "Photo Manipulation",
+      "Image Converter"
+    ],
+    "audio": [
+      "Audio Editor",
+      "Audio Converter"
+    ],
+    "document": [
+      "Document Editor",
+      "Document Converter"
+    ]
+  },
+  "settings": {
+    "theme": "dark",
+    "indentation": 2
+  }
+}

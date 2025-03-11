@@ -10,7 +10,8 @@ const tools = [
     icon: <Code className="w-6 h-6" />,
     items: [
       { name: "JSON Formatter", href: "/json/formatter" },
-      { name: "JSON Delimiter", href: "/json/validator" },
+      { name: "JSON Delimiter", href: "/json/delimiter" },
+      { name: "JSON Stringify", href: "/json/stringify" },
       { name: "JSON Diff", href: "/json/diff" },
     ],
   },
