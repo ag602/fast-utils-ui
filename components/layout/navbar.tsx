@@ -28,6 +28,7 @@ const tools = [
       { name: "JSON Formatter", href: "/json/formatter" },
       { name: "JSON Delimiter", href: "/json/delimiter" },
       { name: "JSON Stringify", href: "/json/stringify" },
+      { name: "JSON Converter", href: "/json/converter" },
       { name: "JSON Diff", href: "/json/diff" },
     ]
   },

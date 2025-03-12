@@ -1,0 +1,30 @@
+company: FastUtils
+version: 1.0.0
+employees:
+  - id: 1
+    name: John Smith
+    role: Developer
+    skills:
+      - JavaScript
+      - React
+      - Node.js
+    contact:
+      email: john@fastutils.com
+      phone: +1-555-0123
+  - id: 2
+    name: Alice Johnson
+    role: Designer
+    skills:
+      - UI/UX
+      - Figma
+      - Adobe XD
+    contact:
+      email: alice@fastutils.com
+      phone: +1-555-0124
+departments:
+  engineering:
+    head: John Smith
+    members: 15
+  design:
+    head: Alice Johnson
+    members: 8

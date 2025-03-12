@@ -1,0 +1,2 @@
+company,version,products.0.id,products.0.name,products.0.features,products.0.settings.theme,products.0.settings.indentation,products.1.id,products.1.name,products.1.features,products.1.settings.theme,products.1.settings.indentation,metadata.created,metadata.author.name,metadata.author.email
+"FastUtils","1.0.0","json-tools","JSON Tools","Formatter; Delimiter; Stringify; Converter; Diff","dark",2,"media-tools","Media Tools","Video Editor; Audio Editor; Photo Editor","light",4,"2025-03-12","FastUtils Team","team@fastutils.com"

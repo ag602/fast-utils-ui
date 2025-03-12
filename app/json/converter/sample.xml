@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <company>FastUtils</company>
+  <version>1.0.0</version>
+  <employees>
+    <employee>
+      <id>1</id>
+      <name>John Smith</name>
+      <role>Developer</role>
+      <skills>
+        <skill>JavaScript</skill>
+        <skill>React</skill>
+        <skill>Node.js</skill>
+      </skills>
+      <contact>
+        <email>john@fastutils.com</email>
+        <phone>+1-555-0123</phone>
+      </contact>
+    </employee>
+    <employee>
+      <id>2</id>
+      <name>Alice Johnson</name>
+      <role>Designer</role>
+      <skills>
+        <skill>UI/UX</skill>
+        <skill>Figma</skill>
+        <skill>Adobe XD</skill>
+      </skills>
+      <contact>
+        <email>alice@fastutils.com</email>
+        <phone>+1-555-0124</phone>
+      </contact>
+    </employee>
+  </employees>
+  <departments>
+    <engineering>
+      <head>John Smith</head>
+      <members>15</members>
+    </engineering>
+    <design>
+      <head>Alice Johnson</head>
+      <members>8</members>
+    </design>
+  </departments>
+</root>

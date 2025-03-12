@@ -1,0 +1,31 @@
+{
+  "company": "FastUtils",
+  "version": "1.0.0",
+  "products": [
+    {
+      "id": "json-tools",
+      "name": "JSON Tools",
+      "features": ["Formatter", "Delimiter", "Stringify", "Converter", "Diff"],
+      "settings": {
+        "theme": "dark",
+        "indentation": 2
+      }
+    },
+    {
+      "id": "media-tools",
+      "name": "Media Tools",
+      "features": ["Video Editor", "Audio Editor", "Photo Editor"],
+      "settings": {
+        "theme": "light",
+        "indentation": 4
+      }
+    }
+  ],
+  "metadata": {
+    "created": "2025-03-12",
+    "author": {
+      "name": "FastUtils Team",
+      "email": "team@fastutils.com"
+    }
+  }
+}
