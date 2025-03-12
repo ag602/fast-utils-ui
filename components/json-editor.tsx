@@ -75,27 +75,27 @@ export function JsonEditor({
 
   // Apply highlights
   useEffect(() => {
-    if (!editor) return
+    if (!editor) return;
 
-    const session = editor.getSession()
-    
+    const session = editor.getSession();
+
     // Clear existing markers
     markers.forEach(id => session.removeMarker(id))
-    setMarkers([])
+    setMarkers([]);
 
     // Add new markers
     const Range = require('ace-builds').Range
-    const newMarkers = highlights.map(highlight => {
-      const lineText = session.getLine(highlight.line)
-      if (lineText !== undefined) {
-        const range = new Range(highlight.line, 0, highlight.line, lineText.length)
-        return session.addMarker(range, `diff-${highlight.type}`, "fullLine")
-      }
-      return -1
-    }).filter(id => id !== -1)
+    const newMarkers = highlights.map(highlight => { // highlights is still used inside, but no longer a dependency
+        const lineText = session.getLine(highlight.line);
+        if (lineText !== undefined) {
+            const range = new Range(highlight.line, 0, highlight.line, lineText.length);
+            return session.addMarker(range, `diff-${highlight.type}`, "fullLine");
+        }
+        return -1;
+    }).filter(id => id !== -1);
 
-    setMarkers(newMarkers)
-  }, [editor, highlights])
+    setMarkers(newMarkers);
+}, [editor]);
 
   const getHighlightStyle = (type: 'added' | 'deleted' | 'changed') => {
     switch (type) {
