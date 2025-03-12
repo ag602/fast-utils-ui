@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "postbuild": "next-sitemap",
     "start": "next start",
     "lint": "next lint"
   },
@@ -52,6 +53,8 @@
     "input-otp": "^1.4.2",
     "lucide-react": "^0.344.0",
     "next": "^14.2.24",
+    "next-seo": "^6.5.0",
+    "next-sitemap": "^4.2.3",
     "next-themes": "^0.2.1",
     "react": "18.2.0",
     "react-ace": "^10.1.0",

@@ -1,0 +1,16 @@
+{
+  "name": "FastUtils - All-in-one Utility Hub",
+  "short_name": "FastUtils",
+  "description": "A comprehensive suite of tools for JSON formatting, video editing, audio manipulation, and more.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ]
+}

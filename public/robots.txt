@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Sitemap: https://fastutils.com/sitemap.xml
+
+# Allow all bots to access JavaScript and CSS
+Allow: /*.js$
+Allow: /*.css$
+
+# Prevent bots from accessing API routes
+Disallow: /api/
